@@ -1,4 +1,4 @@
-FROM amazoncorretto:8u202
+FROM amazonlinux:2.0.20190212
 
 LABEL maintainer="James Ousby <jousby@gmail.com>"
 
@@ -10,56 +10,58 @@ LABEL maintainer="James Ousby <jousby@gmail.com>"
 # The following page lists other possible tools you can install (http://sdkman.io/sdks.html).
 ENV SDKMAN_DIR=/opt/sdkman
 
+ENV JAVA_VERSION=8.0.202-amzn
 ENV GRADLE_VERSION=5.0
 ENV MAVEN_VERSION=3.6.0
 ENV SBT_VERSION=1.2.8 
+ENV NODE_VERSION=8.15.0
 
-
-
-# Install required packages for docker, python, aws-cli and sdkman
-# Configure docker to start on boot
+# Install required packages for python, aws-cli and sdkman
 RUN yum -y update \
     && yum -y install \
-        # Used by sdkman 
         which \
         unzip \
         zip \
-#        ca-certificates \
-#        docker \
-#        groff \
-#        less \
-#        libstdc++ \
-#        openssl \
-#        openrc \
-        # Used by aws cli install
         python-pip \
-        # Used by docker
-#        libvirt-daemon-driver-lxc.x86_64 \
-#        yum-utils \
-#        device-mapper-persistent-data \
-#        lvm2 \
+        python-devel \
+        gcc* \
+        tar.x86_64 \
+        gzip \
     && yum clean all \
     && rm -rf /var/cache/yum
+
+# Install AWS Command Line Interface and S
+RUN pip install awscli
+RUN pip install aws-sam-cli
+RUN yum -y remove python-devel
     
-#RUN amazon-linux-extras install docker 
-RUN yum install -y libvirt-daemon-driver-lxc.x86_64 yum-utils device-mapper-persistent-data lvm2 wget curl
-RUN yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-RUN cd /tmp && wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-RUN yum install -y /tmp/epel-release-latest-7.noarch.rpm
-RUN yum install -y http://vault.centos.org/centos/7.3.1611/extras/x86_64/Packages/container-selinux-2.9-4.el7.noarch.rpm
-RUN yum install -y docker-ce docker-ce-cli containerd.io
+# Install docker
+RUN amazon-linux-extras install docker 
 
 # Install sdkman (simple way to add required jvm build tooling)
 # Install desired JVM build tools (for a full list of sdkman managed tools see http://sdkman.io/sdks.html)
-#RUN curl -s "https://get.sdkman.io" | bash \
-#    && echo "sdkman_auto_answer=true" > $SDKMAN_DIR/etc/config \
-#    && echo "sdkman_auto_selfupdate=false" >> $SDKMAN_DIR/etc/config \
-#    && echo "sdkman_insecure_ssl=true" >> $SDKMAN_DIR/etc/config \
-#    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install gradle ${GRADLE_VERSION}" \
-#    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install maven ${MAVEN_VERSION}" \
-#    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install sbt ${SBT_VERSION}"
+RUN curl -s "https://get.sdkman.io" | bash \
+    && echo "sdkman_auto_answer=true" > $SDKMAN_DIR/etc/config \
+    && echo "sdkman_auto_selfupdate=false" >> $SDKMAN_DIR/etc/config \
+    && echo "sdkman_insecure_ssl=true" >> $SDKMAN_DIR/etc/config \
+    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install java ${JAVA_VERSION}" \
+    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install gradle ${GRADLE_VERSION}" \
+    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install maven ${MAVEN_VERSION}" \
+    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install sbt ${SBT_VERSION}"
 
-# Install AWS Command Line Interface
-#RUN pip install awscli
+# Install nvm (node version manager) and install node
+RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
+RUN /bin/bash -c "source /root/.nvm/nvm.sh; nvm install ${NODE_VERSION}"
+
+# Install AWS Cloud Development Kit CLI
+RUN /bin/bash -c "source /root/.nvm/nvm.sh; npm i -g aws-cdk"
+
+# Setup up the root account to load all the required tools on entry
+RUN { \
+  echo 'dockerd &> /tmp/docker.log &'; \
+  echo 'source ${SDKMAN_DIR}/bin/sdkman-init.sh'; \
+  echo 'export NVM_DIR=~/.nvm'; \
+  echo '. ~/.nvm/nvm.sh'; \
+  } > /root/.bashrc
 
 ENTRYPOINT /bin/bash
