@@ -1,0 +1,13 @@
+sudo: required
+
+language: c
+
+services:
+  - docker
+
+before_install:
+  - docker info
+  - docker build -t jousby/aws-buildbox .
+
+script:
+  - docker run -it --entrypoint "/usr/bin/bash" jousby/aws-buildbox -c "source /opt/sdkman/bin/sdkman-init.sh && java -version"
