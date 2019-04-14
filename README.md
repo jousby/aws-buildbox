@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/jousby/aws-buildbox.svg?branch=master)](https://travis-ci.org/jousby/aws-buildbox)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/jousby/aws-buildbox/blob/master/LICENSE)
 
-A docker image for use in AWS CodeBuild as a build environment that is AWS all the way down. If your targeted runtime environment is AWS then you may find this image useful
+A docker image for use in AWS CodeBuild as a build environment that is AWS all the way down. If your targeted runtime environment is AWS then you may find this image useful in order
 to use the same environment (Amazon Linux) and jvm (Amazon Corretto) in your build process as you do at runtime.
 
 
