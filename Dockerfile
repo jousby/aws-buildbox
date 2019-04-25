@@ -19,7 +19,7 @@ ENV GRADLE_VERSION=5.3.1
 ENV MAVEN_VERSION=3.6.1
 ENV SBT_VERSION=1.2.8 
 ENV NODE_VERSION=10.15.3
-ENV CDK_VERSION=0.27.0
+ENV CDK_VERSION=0.29.0
 
 # Install required packages for python, aws-cli and sdkman
 RUN yum -y update \
