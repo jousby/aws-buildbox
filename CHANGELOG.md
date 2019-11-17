@@ -1,3 +1,20 @@
+## 1.5.0 (Created: Nov 17 2019)
+
+General version bump. 
+
+* Amazon Linux=2.0.20191016.0
+* Linux Kernel=4.9.184-linuxkit
+* Docker=18.09.9
+* AWS Cli=1.16.280
+* SAM Cli=0.23.0
+* CDK Cli=1.15.0
+* Node=11.1.0
+* Python=2.7.16
+* Java=8.0.232-amzn
+* Gradle=6.0
+* Maven=3.6.2
+* Sbt=1.3.3
+
 ## 1.4.0 (Created: Apr 26 2019)
 
 Updating Amazon Corretto (JVM) to 8.0.212
