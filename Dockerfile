@@ -1,4 +1,4 @@
-FROM amazonlinux:2.0.20191016.0
+FROM amazonlinux:2.0.20191217.0
 
 LABEL maintainer="James Ousby <jousby@gmail.com>"
 
@@ -11,15 +11,15 @@ LABEL maintainer="James Ousby <jousby@gmail.com>"
 ENV SDKMAN_DIR=/opt/sdkman
 
 # For stability / deterministic builds, fix the versions of tools being installed rather than just use 'latest'.
-ENV AWS_CLI_VERSION=1.16.280
-ENV AWS_SAM_CLI_VERSION=0.23.0
+ENV AWS_CLI_VERSION=2.0.0
+#ENV AWS_SAM_CLI_VERSION=0.33.0
 ENV DOCKER_VERSION=18.09.9
-ENV JAVA_VERSION=8.0.232-amzn
-ENV GRADLE_VERSION=6.0
-ENV MAVEN_VERSION=3.6.2
-ENV SBT_VERSION=1.3.3
-ENV NODE_VERSION=11.1.0
-ENV CDK_VERSION=1.15.0
+ENV JAVA_VERSION=11.0.6-amzn
+ENV GRADLE_VERSION=6.1.1
+ENV MAVEN_VERSION=3.6.3
+ENV SBT_VERSION=1.3.8
+ENV NODE_VERSION=12.16.0
+ENV CDK_VERSION=1.23.0
 
 # Install required packages for python, aws-cli and sdkman
 RUN yum -y update \
@@ -35,9 +35,19 @@ RUN yum -y update \
     && yum clean all \
     && rm -rf /var/cache/yum
 
-# Install AWS CLI and Serverless Application Model CLI
-RUN pip install awscli==${AWS_CLI_VERSION}
-RUN pip install aws-sam-cli==${AWS_SAM_CLI_VERSION}
+# Install AWS CLI
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install
+
+# TODO (AWS SAM CLI now requires homebrew to install, will come back later to sort this out)
+# Install AWS SAM CLI 
+#RUN adduser linuxbrew
+#USER linuxbrew
+#RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+#USER root
+#RUN brew tap aws/tap
+#RUN brew install aws-sam-cli ${AWS_SAM_CLI_VERSION}
 RUN yum -y remove python-devel
     
 # Install docker
@@ -49,7 +59,7 @@ RUN curl -s "https://get.sdkman.io" | bash \
     && echo "sdkman_auto_answer=true" > $SDKMAN_DIR/etc/config \
     && echo "sdkman_auto_selfupdate=false" >> $SDKMAN_DIR/etc/config \
     && echo "sdkman_insecure_ssl=true" >> $SDKMAN_DIR/etc/config \
-    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install java ${JAVA_VERSION}" \
+-   && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install java ${JAVA_VERSION}" \
     && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install gradle ${GRADLE_VERSION}" \
     && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install maven ${MAVEN_VERSION}" \
     && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install sbt ${SBT_VERSION}"
@@ -64,7 +74,7 @@ RUN /bin/bash -c "source /root/.nvm/nvm.sh; npm i -g aws-cdk@${CDK_VERSION}"
 # Setup up the root account to load all the required tools on entry
 RUN { \
   echo 'dockerd &> /tmp/docker.log &'; \
-  echo 'source ${SDKMAN_DIR}/bin/sdkman-init.sh'; \
+  echo "source ${SDKMAN_DIR}/bin/sdkman-init.sh"; \
   echo 'export NVM_DIR=~/.nvm'; \
   echo '. ~/.nvm/nvm.sh'; \
   } > /root/.bashrc
