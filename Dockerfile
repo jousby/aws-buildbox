@@ -19,7 +19,7 @@ ENV GRADLE_VERSION=6.1.1
 ENV MAVEN_VERSION=3.6.3
 ENV SBT_VERSION=1.3.8
 ENV NODE_VERSION=12.16.0
-ENV CDK_VERSION=1.23.0
+ENV CDK_VERSION=1.24.0
 
 # Install required packages for python, aws-cli and sdkman
 RUN yum -y update \
@@ -59,7 +59,7 @@ RUN curl -s "https://get.sdkman.io" | bash \
     && echo "sdkman_auto_answer=true" > $SDKMAN_DIR/etc/config \
     && echo "sdkman_auto_selfupdate=false" >> $SDKMAN_DIR/etc/config \
     && echo "sdkman_insecure_ssl=true" >> $SDKMAN_DIR/etc/config \
--   && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install java ${JAVA_VERSION}" \
+    && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install java ${JAVA_VERSION}" \
     && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install gradle ${GRADLE_VERSION}" \
     && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install maven ${MAVEN_VERSION}" \
     && bash -c "source ${SDKMAN_DIR}/bin/sdkman-init.sh && sdk install sbt ${SBT_VERSION}"

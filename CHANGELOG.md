@@ -1,3 +1,19 @@
+## 1.6.1 (Created: Feb 16 2020)
+
+Version bump of CDK and bugfix in sdkman config
+
+* Amazon Linux=2.0.20191217.0
+* Linux Kernel=4.9.184-linuxkit
+* Docker=18.09.9
+* AWS Cli=2.0.0
+* CDK Cli=1.23.0
+* Node=12.16.0
+* Python=2.7.16
+* Java=11.0.6-amzn
+* Gradle=6.1.1
+* Maven=3.6.3
+* Sbt=1.3.8
+
 ## 1.6.0 (Created: Feb 16 2020)
 
 Moved to Java 11.
